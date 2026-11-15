@@ -20,7 +20,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
         {
             if (__result)
             {
-                Plugin.curse.sendLoc($"{__instance.GetGirlDefinition().firstName.ToLower()}_gift_loc_start", IDs.giftidtooffset(item.id));
+                HuniePopArchipelago.ArchipelagoClient.sendLoc($"{__instance.GetGirlDefinition().firstName.ToLower()}_gift_loc_start", IDs.giftidtooffset(item.id));
             }
         }
 
@@ -71,7 +71,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
 
                     for (int i = 0; i < 24; i++)
                     {
-                        if (item.id == CursedArchipelagoClient.girldata[ag.definition.id].collection[i].id)
+                        if (item.id == ArchipelagoClient.girldata[ag.definition.id].collection[i].id)
                         {
                             flag = true;
                             num = i / 6;
@@ -108,7 +108,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
 
                 case ItemType.PANTIES:
                     dialogTriggerDefinition = GameManager.Stage.uiGirl.kyuSpecialDialogTrigger;
-                    if (ag.definition != GameManager.Stage.uiGirl.fairyGirlDef && !Convert.ToBoolean(Plugin.curse.connected.slot_data["kyu_enabled"]))
+                    if (ag.definition != GameManager.Stage.uiGirl.fairyGirlDef && !Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["kyu_enabled"]))
                     {
                         dialogTriggerDefinition = GameManager.Stage.uiGirl.givenGiftDialogTrigger;
 
@@ -136,7 +136,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
                             GameManager.Stage.cellNotifications.Notify(CellNotificationType.MESSAGE, "Alpha Mode Activated!");
                             SteamUtils.UnlockAchievement("alpha", true);
 
-                            if (Convert.ToBoolean(Plugin.curse.connected.slot_data["goal"])) Plugin.curse.sendCompletion();
+                            if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["goal"])) ArchipelagoClient.sendCompletion();
 
                         }
 
@@ -145,7 +145,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
                             EnergyTrail energyTrail = new GameObject("EnergyTrail", new Type[] { typeof(EnergyTrail) }).GetComponent<EnergyTrail>();
                             energyTrail.Init(GameManager.System.Cursor.GetMousePosition(), GameManager.Stage.uiGirl.itemGiveGiftEnergyTrail, null, EnergyTrailFormat.END, null);
 
-                            Plugin.curse.sendLoc("kyu_panties_loc_start", IDs.pantiesidtooffset(item.id));
+                            HuniePopArchipelago.ArchipelagoClient.sendLoc("kyu_panties_loc_start", IDs.pantiesidtooffset(item.id));
                         }
                     }
                     break;
@@ -178,7 +178,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
 
             //int hunie = Convert.ToInt32(Plugin.curse.connected.slot_data["hunie_gift_cost"]);
             int hunie = -1;
-            if (CursedArchipelagoClient.gifthunniecost.Keys.Contains(collectionSlot.itemDefinition.id)) { hunie = CursedArchipelagoClient.gifthunniecost[collectionSlot.itemDefinition.id]; }
+            if (ArchipelagoClient.gifthunniecost.Keys.Contains(collectionSlot.itemDefinition.id)) { hunie = ArchipelagoClient.gifthunniecost[collectionSlot.itemDefinition.id]; }
             else { hunie = 99999; }
 
             //only allow buying if not in date, have inventory slots, has enougth hunie and if the item has already been recieved by the client
@@ -186,7 +186,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
                 GameManager.System.GameState == GameState.SIM &&
                 !GameManager.System.Player.IsInventoryFull(GameManager.System.Player.inventory) &&
                 GameManager.System.Player.hunie >= hunie &&
-                CursedArchipelagoClient.alist.hasitem(IDs.giftidtooffset(collectionSlot.itemDefinition.id) + Convert.ToInt32(Plugin.curse.connected.slot_data["gift_item_start"])))
+                ArchipelagoClient.alist.hasitem(IDs.giftidtooffset(collectionSlot.itemDefinition.id) + Convert.ToInt32(ArchipelagoClient.ServerData.slotData["gift_item_start"])))
             {
                 GameManager.System.Player.AddItem(collectionSlot.itemDefinition, GameManager.System.Player.inventory, true, false);
                 GameManager.System.Player.hunie -= hunie;
@@ -210,7 +210,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
             if (!(__instance.itemDefinition.type == ItemType.GIFT || __instance.itemDefinition.type == ItemType.UNIQUE_GIFT)) { return true; }
 
             int hunie = -1;
-            if (CursedArchipelagoClient.gifthunniecost.Keys.Contains(__instance.itemDefinition.id)) { hunie = CursedArchipelagoClient.gifthunniecost[__instance.itemDefinition.id]; }
+            if (ArchipelagoClient.gifthunniecost.Keys.Contains(__instance.itemDefinition.id)) { hunie = ArchipelagoClient.gifthunniecost[__instance.itemDefinition.id]; }
             else { hunie = 99999; }
 
             //only enable button if not in date, have inventory slots, has enougth hunie and if the item has already been recieved by the client
@@ -220,7 +220,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
                 GameManager.System.Player.endingSceneShown &&
                 !GameManager.System.Player.IsInventoryFull(GameManager.System.Player.inventory) &&
                 GameManager.System.Player.hunie >= hunie &&
-                CursedArchipelagoClient.alist.hasitem(IDs.giftidtooffset(__instance.itemDefinition.id) + Convert.ToInt32(Plugin.curse.connected.slot_data["gift_item_start"])))
+                ArchipelagoClient.alist.hasitem(IDs.giftidtooffset(__instance.itemDefinition.id) + Convert.ToInt32(ArchipelagoClient.ServerData.slotData["gift_item_start"])))
             {
                 __instance.button.Enable();
             }

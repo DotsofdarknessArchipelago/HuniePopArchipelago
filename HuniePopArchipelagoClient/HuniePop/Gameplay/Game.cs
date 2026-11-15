@@ -22,18 +22,18 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
         public static bool continueoveride(ref int ____saveFileIndex)
         {
             //make sure we are connected to a server
-            if (!Plugin.curse.fullconnection && Plugin.tringtoconnect)
-            {
-                ArchipelagoConsole.LogImportant("There was an error setting up the connection to the server please restart the game and try again");
-                return false;
-            }
+            //if (!Plugin.curse.fullconnection && Plugin.tringtoconnect)
+            //{
+            //    ArchipelagoConsole.LogImportant("There was an error setting up the connection to the server please restart the game and try again");
+            //    return false;
+            //}
 
             //only continue a game in the bottom left slot
             if (____saveFileIndex != 3) { return false; }
 
             //check if we have items that need to be processed and inform player
             bool n = false;
-            foreach (ArchipelagoItem i in CursedArchipelagoClient.alist.list)
+            foreach (ArchipelagoItem i in ArchipelagoClient.alist.list)
             {
                 if (!i.processed) { n = true; break; }
             }

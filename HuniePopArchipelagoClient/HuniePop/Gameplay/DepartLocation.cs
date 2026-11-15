@@ -1,9 +1,12 @@
-﻿using HarmonyLib;
+﻿using Archipelago.MultiClient.Net.Enums;
+using HarmonyLib;
 using HuniePopArchiepelagoClient.Archipelago;
 using HuniePopArchiepelagoClient.UI;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
@@ -56,13 +59,6 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
                 }
             }
 
-            //save archdata
-            using (StreamWriter archfile = File.CreateText(Application.persistentDataPath + $"/archdata{Menu.slot}"))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(archfile, CursedArchipelagoClient.alist);
-            }
-
             //make sure we are not comming back from a date and roll everything for a new day
             if (__instance.currentLocation.type != LocationType.DATE)
             {
@@ -70,12 +66,12 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
             }
 
             //check for if goal is completed
-            if (Convert.ToBoolean(Plugin.curse.connected.slot_data["goal"]))
+            if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["goal"]))
             {
                 //if goal is give kyu all panties
                 if (player.alphaModeActive)
                 {
-                    Plugin.curse.sendCompletion();
+                    ArchipelagoClient.sendCompletion();
                 }
             }
             else
@@ -83,21 +79,33 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
                 //if goal is to have sex with all girls
                 bool goalreached = true;
 
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["tiffany_enabled"])) { if (!player.girls[0].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["aiko_enabled"])) { if (!player.girls[1].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["kyanna_enabled"])) { if (!player.girls[2].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["audrey_enabled"])) { if (!player.girls[3].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["lola_enabled"])) { if (!player.girls[4].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["nikki_enabled"])) { if (!player.girls[5].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["jessie_enabled"])) { if (!player.girls[6].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["beli_enabled"])) { if (!player.girls[7].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["kyu_enabled"])) { if (!player.girls[8].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["momo_enabled"])) { if (!player.girls[9].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["celeste_enabled"])) { if (!player.girls[10].gotPanties) { goalreached = false; } }
-                if (Convert.ToBoolean(Plugin.curse.connected.slot_data["venus_enabled"])) { if (!player.girls[11].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["tiffany_enabled"])) { if (!player.girls[0].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["aiko_enabled"])) { if (!player.girls[1].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["kyanna_enabled"])) { if (!player.girls[2].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["audrey_enabled"])) { if (!player.girls[3].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["lola_enabled"])) { if (!player.girls[4].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["nikki_enabled"])) { if (!player.girls[5].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["jessie_enabled"])) { if (!player.girls[6].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["beli_enabled"])) { if (!player.girls[7].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["kyu_enabled"])) { if (!player.girls[8].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["momo_enabled"])) { if (!player.girls[9].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["celeste_enabled"])) { if (!player.girls[10].gotPanties) { goalreached = false; } }
+                if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["venus_enabled"])) { if (!player.girls[11].gotPanties) { goalreached = false; } }
 
-                if (goalreached) { Plugin.curse.sendCompletion(); }
+                if (goalreached) { ArchipelagoClient.sendCompletion(); }
             }
+
+
+            HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, "savefile"] = JsonConvert.SerializeObject(GameManager.System.SaveFile);
+            HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, "archdata"] = JsonConvert.SerializeObject(ArchipelagoClient.alist);
+
+
+            ////save archdata
+            //using (StreamWriter archfile = File.CreateText(Application.persistentDataPath + $"/archdata{Menu.slot}"))
+            //{
+            //    JsonSerializer serializer = new JsonSerializer();
+            //    serializer.Serialize(archfile, ArchipelagoClient.alist);
+            //}
 
         }
 
@@ -113,19 +121,19 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
         /// </summary>
         public static void processarch()
         {
-            pantiesloc ??= Convert.ToInt32(Plugin.curse.connected.slot_data["panties_item_start"]);
-            girlloc ??= Convert.ToInt32(Plugin.curse.connected.slot_data["girl_unlock_start"]);
-            giftloc ??= Convert.ToInt32(Plugin.curse.connected.slot_data["gift_item_start"]);
-            tokenloc ??= Convert.ToInt32(Plugin.curse.connected.slot_data["token_item_start"]);
-            junkloc  ??= Convert.ToInt32(Plugin.curse.connected.slot_data["junk_item_start"]);
+            pantiesloc ??= Convert.ToInt32(ArchipelagoClient.ServerData.slotData["panties_item_start"]);
+            girlloc ??= Convert.ToInt32(ArchipelagoClient.ServerData.slotData["girl_unlock_start"]);
+            giftloc ??= Convert.ToInt32(ArchipelagoClient.ServerData.slotData["gift_item_start"]);
+            tokenloc ??= Convert.ToInt32(ArchipelagoClient.ServerData.slotData["token_item_start"]);
+            junkloc  ??= Convert.ToInt32(ArchipelagoClient.ServerData.slotData["junk_item_start"]);
 
             PlayerManager player = GameManager.System.Player;
             ArchipelagoConsole.LogMessage("processing items");
 
 
-            for (int i = 0; i < CursedArchipelagoClient.alist.list.Count; i++)
+            for (int i = 0; i < ArchipelagoClient.alist.list.Count; i++)
             {
-                ArchipelagoItem item = CursedArchipelagoClient.alist.list[i];
+                ArchipelagoItem item = ArchipelagoClient.alist.list[i];
 
                 //skip item if it has been processed
                 if (item.processed) { continue; }

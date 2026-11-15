@@ -31,13 +31,20 @@
     </PropertyGroup>
 
     <Target Name="ZipMod" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <ZipDirectory SourceDirectory="bin\Release\$(AssemblyName)"
-                      DestinationFile="bin\Release\$(AssemblyName)-$(Version).zip"
-                      Overwrite="true"/>
+        <ZipDirectory SourceDirectory="bin\Release\$(AssemblyName)" DestinationFile="bin\Release\$(AssemblyName)-$(Version).zip" Overwrite="true" />
     </Target>
 
+    <!--AUTOMATIC BUILDING OF ZIP FILES SO THAT I DONT FORGET THE C-WSPP-WEBSOCKET-SHARP OVERWRITE-->
+	<Target Name="CreateZip" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<Copy SourceFiles="C:\huniepop\BepInEx\plugins\Hunie Pop Archipelago Client\Archipelago.MultiClient.Net.dll" DestinationFolder="C:\HuniePop\Hunie Pop Archipelago plugin WINDOWS\BepInEx\plugins\Hunie Pop Archipelago Client"/>
+		<Copy SourceFiles="C:\huniepop\BepInEx\plugins\Hunie Pop Archipelago Client\Hunie Pop Archipelago Client.dll" DestinationFolder="C:\HuniePop\Hunie Pop Archipelago plugin WINDOWS\BepInEx\plugins\Hunie Pop Archipelago Client"/>
+		<Copy SourceFiles="C:\huniepop\BepInEx\plugins\Hunie Pop Archipelago Client\Newtonsoft.Json.dll" DestinationFolder="C:\HuniePop\Hunie Pop Archipelago plugin WINDOWS\BepInEx\plugins\Hunie Pop Archipelago Client"/>
+		<!--TODO: ADD DISTCTION FOR WINDOWS AND LINUX ONCE THEY ARE BOTH BEING BUILT-->
+		<ZipDirectory SourceDirectory="C:\HuniePop\Hunie Pop Archipelago plugin WINDOWS" DestinationFile="C:\HuniePop\Hunie Pop Archipelago plugin vNEW.zip" Overwrite="true" />
+	</Target>
+
     <ItemGroup>
-        <PackageReference Include="Archipelago.MultiClient.Net" Version="6.6.0" />
+        <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.1" />
 		<PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.Core" Version="5.4.21" />
 		<PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />

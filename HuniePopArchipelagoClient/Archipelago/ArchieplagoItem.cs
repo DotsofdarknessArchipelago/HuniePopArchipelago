@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Archipelago.MultiClient.Net.Models;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HuniePopArchiepelagoClient.Archipelago
@@ -14,39 +15,24 @@ namespace HuniePopArchiepelagoClient.Archipelago
         public bool processed = false;
         public bool putinshop = false;
 
-        public ArchipelagoItem(NetworkItem item)
+        public ArchipelagoItem(ItemInfo item)
         {
-            this.Id = item.item;
-            this.LocationId = item.location;
-            this.playerslot = item.player;
-            this.itemname = Plugin.curse.data.data.games["Hunie Pop"].idtoitem[item.item];
-            if (item.player <= 0)
+            this.Id = item.ItemId;
+            this.LocationId = item.LocationId;
+            this.playerslot = item.Player.Slot;
+            this.itemname = item.ItemName;
+            if (item.Player.Slot <= 0)
             {
                 this.playername = "SERVER";
                 this.locationname = "SERVER";
                 return;
             }
-            string playername = "";
-            for (int i = 0; i < Plugin.curse.connected.players.Count(); i++)
-            {
-                if (Plugin.curse.connected.players[i].slot == item.player)
-                {
-                    playername = Plugin.curse.connected.players[i].name;
-                    break;
-                }
-            }
-            string game = "";
-            foreach (KeyValuePair<int, NetworkSlot> v in Plugin.curse.connected.slot_info)
-            {
-                if (v.Value.name == playername)
-                {
-                    game = v.Value.game;
-                    break;
-                }
-            }
+            string playername = item.Player.Name;
+            string game = item.LocationGame;
+
             this.playername = playername;
             if (this.LocationId <= 0) { this.locationname = "SERVER"; }
-            else { this.locationname = Plugin.curse.data.data.games[game].idtolocation[item.location]; }
+            else { this.locationname = item.LocationName; }
         }
 
         public ArchipelagoItem()
@@ -77,23 +63,45 @@ namespace HuniePopArchiepelagoClient.Archipelago
         public int listversion = 2;
         public List<ArchipelagoItem> list = new List<ArchipelagoItem>();
 
-        public void add(NetworkItem netitem)
+        public void add(ItemInfo netitem)
         {
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Id == netitem.item && list[i].playerslot == netitem.player && list[i].LocationId == netitem.location)
+                if (list[i].Id == netitem.ItemId && list[i].playerslot == netitem.Player.Slot && list[i].LocationId == netitem.LocationId)
                 {
-                    Plugin.BepinLogger.LogMessage($"-item({Plugin.curse.data.data.games["Hunie Pop"].idtoitem[netitem.item]} from loc:{netitem.location} total items={list.Count}) already in list skipping");
+                    HuniePopArchipelago.BepinLogger.LogMessage($"-item({netitem.ItemId}:{netitem.ItemName} from loc:{netitem.LocationId} total items={list.Count}) already in list skipping");
                     return;
                 }
             }
             ArchipelagoItem item = new ArchipelagoItem(netitem);
             list.Add(item);
-            Plugin.BepinLogger.LogMessage($"+item({Plugin.curse.data.data.games["Hunie Pop"].idtoitem[netitem.item]} from loc:{netitem.location} total items={list.Count}) not in list adding");
+            HuniePopArchipelago.BepinLogger.LogMessage($"+item({netitem.ItemId}:{netitem.ItemName} from loc:{netitem.LocationId} total items={list.Count}) not in list adding");
+        }
+
+        public void add(ArchipelagoItem ai)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Id == ai.Id && list[i].playername == ai.playername && list[i].LocationId == ai.LocationId)
+                {
+                    list[i].processed = ai.processed;
+                    list[i].putinshop = ai.putinshop;
+                    return;
+                }
+            }
+            list.Add(ai);
         }
 
         public bool merge(List<ArchipelagoItem> oldlist)
         {
+
+            if (oldlist == null || oldlist.Count == 0) return false;
+            for (int i = 0; i < oldlist.Count; i++)
+            {
+                add(oldlist[i]);
+            }
+            return false;
+
             if (oldlist.Count == 0) { return true; }
             if (list.Count == 0) { list = oldlist; return false; }
 
