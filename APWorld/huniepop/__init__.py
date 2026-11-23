@@ -44,13 +44,13 @@ class HuniePop(World):
         self.shoppasses = 0
 
         if len(self.options.enabled_girls.value)==0:
-            raise OptionError(f"""(Hunie Pop) Player:"{self.player_name}" has no girls enabled in their YMAL""")
+            raise Exception(f"""(Hunie Pop) Player: "{self.player_name}" has no girls enabled in their YAML""")
 
         if "kyu" not in self.options.enabled_girls.value and self.options.goal.value==1:
-            logging.warning(f"""(Hunie Pop) Adding "kyu" to "enabled_girls" for Player:"{self.player_name}" since goal is "Give kyu all available panties\"""")
+            logging.warning(f"""(Hunie Pop) Adding "kyu" to "enabled_girls" for Player: "{self.player_name}" since goal is "Give kyu all available panties\"""")
             self.options.enabled_girls.value.add("kyu")
         if len(self.options.enabled_girls.value) < self.options.number_of_starting_girls.value:
-            logging.warning(f"""(Hunie Pop) "number_of_starting_girls" higher than number of girls enabled for Player:"{self.player_name}" setting "number_of_starting_girls" to be number of girls enabled """)
+            logging.warning(f"""(Hunie Pop) "number_of_starting_girls" higher than number of girls enabled for Player: "{self.player_name}" setting "number_of_starting_girls" to be number of girls enabled """)
             self.options.number_of_starting_girls.value = len(self.options.enabled_girls.value)
 
 
