@@ -44,7 +44,7 @@ class HuniePop(World):
         self.shoppasses = 0
 
         if len(self.options.enabled_girls.value)==0:
-            raise Exception(f"""(Hunie Pop) Player: "{self.player_name}" has no girls enabled in their YAML""")
+            raise OptionError(f"""(Hunie Pop) Player: "{self.player_name}" has no girls enabled in their YAML""")
 
         if "kyu" not in self.options.enabled_girls.value and self.options.goal.value==1:
             logging.warning(f"""(Hunie Pop) Adding "kyu" to "enabled_girls" for Player: "{self.player_name}" since goal is "Give kyu all available panties\"""")
@@ -439,5 +439,4 @@ class HuniePop(World):
 
             **loc_datapackage,
         }
-
         return returndict

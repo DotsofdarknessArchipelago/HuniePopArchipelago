@@ -101,8 +101,6 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
             }
 
 
-            HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, "savefile"] = JsonConvert.SerializeObject(GameManager.System.SaveFile);
-            HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, "archdata"] = JsonConvert.SerializeObject(ArchipelagoClient.alist);
 
 
             ////save archdata

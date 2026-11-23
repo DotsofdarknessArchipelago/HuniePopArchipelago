@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Archipelago.MultiClient.Net.Enums;
+using HarmonyLib;
 using HuniePopArchiepelagoClient.Archipelago;
 using HuniePopArchiepelagoClient.HuniePop.Girls;
 using Mono.Cecil.Cil;
@@ -67,11 +68,15 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
         [HarmonyPostfix]
         public static void saveflags()
         {
-            using (StreamWriter file = File.CreateText(Application.persistentDataPath + "/archdata"))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, ArchipelagoClient.alist);
-            }
+
+            HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, "savefile"] = JsonConvert.SerializeObject(GameManager.System.SaveFile);
+            HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, "archdata"] = JsonConvert.SerializeObject(ArchipelagoClient.alist);
+
+            //using (StreamWriter file = File.CreateText(Application.persistentDataPath + "/archdata"))
+            //{
+            //    JsonSerializer serializer = new JsonSerializer();
+            //    serializer.Serialize(file, ArchipelagoClient.alist);
+            //}
         }
 
 

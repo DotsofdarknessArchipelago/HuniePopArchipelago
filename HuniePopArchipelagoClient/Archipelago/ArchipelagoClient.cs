@@ -184,7 +184,10 @@ namespace HuniePopArchiepelagoClient.Archipelago
 
                 connectedplayerfile = HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, $"savefile"];
 
-                session.Locations.CompleteLocationChecksAsync(null, ServerData.CheckedLocations.ToArray());
+                //session.Locations.CompleteLocationChecksAsync(null, ServerData.CheckedLocations.ToArray());
+
+                ServerData.CheckedLocations = session.Locations.AllLocationsChecked.ToList();
+
                 outText = $"Successfully connected to {ServerData.Uri} as {ServerData.SlotName}!";
 
                 ArchipelagoConsole.LogMessage(outText);
