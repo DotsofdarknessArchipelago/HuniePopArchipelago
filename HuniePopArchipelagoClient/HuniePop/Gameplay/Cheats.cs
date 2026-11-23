@@ -5,7 +5,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
     [HarmonyPatch]
     public class Cheats
     {
-        public static bool enable = true;
+        public static bool enable = false;
 
         /// <summary>
         /// makes all puzzles complete in 1 move

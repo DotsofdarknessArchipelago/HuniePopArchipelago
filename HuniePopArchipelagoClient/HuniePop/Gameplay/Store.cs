@@ -62,7 +62,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
             {
                 ArchipelagoConsole.LogMessage($"PURCHASED ITEM:{storeItemSlot.itemDefinition.name}");
                 ArchipelagoConsole.LogMessage($"SENDING LOCATION {storeItemSlot.itemDefinition.id}");
-                HuniePopArchipelago.ArchipelagoClient.sendLoc(storeItemSlot.itemDefinition.id);
+                HuniePopArchipelago.ArchipelagoClient.sendLoc(null, storeItemSlot.itemDefinition.id);
                 return true;
             }
             return true;

@@ -26,7 +26,9 @@ namespace HuniePopArchiepelagoClient.Archipelago
 
         public static bool Authenticated;
         public static bool gamestarted = false;
-        private bool attemptingConnection;
+        public static bool attemptingConnection;
+
+        public static string connectedplayerfile = null;
 
         public static ArchipelagoData ServerData = new();
         public DeathLinkHandler DeathLinkHandler;
@@ -50,6 +52,8 @@ namespace HuniePopArchiepelagoClient.Archipelago
         public void Connect()
         {
             if (Authenticated || attemptingConnection) return;
+
+            attemptingConnection = true;
 
             ServerData.Uri = Menu.playeruri;
             ServerData.SlotName = Menu.playername;
@@ -126,6 +130,7 @@ namespace HuniePopArchiepelagoClient.Archipelago
                     ArchipelagoConsole.LogMessage("WARNING EXPECTED APWORLD VERSION MISSMATCH");
                     ArchipelagoConsole.LogImportant($"EXPECTED V{HuniePopArchipelago.compatworldmajor}.{HuniePopArchipelago.compatworldminor}.{HuniePopArchipelago.compatworldbuild} GOT V{worldver.Major}.{worldver.Minor}.{worldver.Build}");
                 }
+                HuniePopArchipelago.BepinLogger.LogMessage($"APWORLD V{worldver.Major}.{worldver.Minor}.{worldver.Build}");
 
                 setupgirldata();
 
@@ -176,6 +181,8 @@ namespace HuniePopArchiepelagoClient.Archipelago
                 ArchipelagoConsole.CommandText = "!help";
 
                 Authenticated = true;
+
+                connectedplayerfile = HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, $"savefile"];
 
                 session.Locations.CompleteLocationChecksAsync(null, ServerData.CheckedLocations.ToArray());
                 outText = $"Successfully connected to {ServerData.Uri} as {ServerData.SlotName}!";
@@ -260,7 +267,7 @@ namespace HuniePopArchiepelagoClient.Archipelago
         public void sendLoc(int loc)
         {
             if (!ServerData.CheckedLocations.Contains(loc)) { ServerData.CheckedLocations.Add(loc); }
-            session.Locations.CompleteLocationChecks(loc);
+            session.Locations.CompleteLocationChecksAsync(null, loc);
         }
 
         public void sendLoc(string set, int offset)
@@ -271,7 +278,13 @@ namespace HuniePopArchiepelagoClient.Archipelago
                 return;
             }
             HuniePopArchipelago.BepinLogger.LogMessage($"SENDING LOC:\nSET:{set}, OFFSET:{offset}");
-            sendLoc(Convert.ToInt32(ServerData.slotData[set]) + offset);
+            if (set == null)
+            {
+                new Thread(() => sendLoc(offset)).Start();
+                return;
+            }
+            new Thread(() => sendLoc(Convert.ToInt32(ServerData.slotData[set]) + offset)).Start();
+            //sendLoc(Convert.ToInt32(ServerData.slotData[set]) + offset);
         }
         public static void sendCompletion()
         {

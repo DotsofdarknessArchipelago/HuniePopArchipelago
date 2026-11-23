@@ -270,9 +270,9 @@ class hunie_gift_cost(DictRange):
     default = "single-10000"
 
 class hunie_to_money(Range):
-    """sets the conversion rate for hunnie to money in the store
-    NOTE: set to 0 to disable converting hunnie to money"""
-    display_name = "puzzle affection add"
+    """sets the conversion rate for hunie to money in the store
+    NOTE: set to 0 to disable converting hunie to money"""
+    display_name = "hunie to money conversion rate"
     range_start = 0
     range_end = 100
     default = 2

@@ -136,7 +136,11 @@ namespace HuniePopArchiepelagoClient.HuniePop.Girls
                             GameManager.Stage.cellNotifications.Notify(CellNotificationType.MESSAGE, "Alpha Mode Activated!");
                             SteamUtils.UnlockAchievement("alpha", true);
 
-                            if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["goal"])) ArchipelagoClient.sendCompletion();
+                            if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["goal"])) 
+                            {
+                                HuniePopArchipelago.ArchipelagoClient.sendLoc("goal_loc_start", 1);
+                                ArchipelagoClient.sendCompletion();
+                            }
 
                         }
 

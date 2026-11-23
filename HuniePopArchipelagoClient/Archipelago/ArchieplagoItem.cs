@@ -174,5 +174,14 @@ namespace HuniePopArchiepelagoClient.Archipelago
             }
             return false;
         }
+
+        public void resetlist()
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                list[i].processed = false;
+                list[i].putinshop = false;
+            }
+        }
     }
 }

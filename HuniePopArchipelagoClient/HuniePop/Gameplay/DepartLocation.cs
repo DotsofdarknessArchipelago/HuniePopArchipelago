@@ -71,6 +71,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
                 //if goal is give kyu all panties
                 if (player.alphaModeActive)
                 {
+                    HuniePopArchipelago.ArchipelagoClient.sendLoc("goal_loc_start", 1);
                     ArchipelagoClient.sendCompletion();
                 }
             }
@@ -92,7 +93,11 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
                 if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["celeste_enabled"])) { if (!player.girls[10].gotPanties) { goalreached = false; } }
                 if (Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["venus_enabled"])) { if (!player.girls[11].gotPanties) { goalreached = false; } }
 
-                if (goalreached) { ArchipelagoClient.sendCompletion(); }
+                if (goalreached) 
+                {
+                    HuniePopArchipelago.ArchipelagoClient.sendLoc("goal_loc_start", 2);
+                    ArchipelagoClient.sendCompletion(); 
+                }
             }
 
 

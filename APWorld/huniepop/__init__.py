@@ -372,7 +372,7 @@ class HuniePop(World):
                     self.set_rule(self.multiworld.get_location(f"Gift {girl} {gift_id_to_name[self.girldata[girl]["gift24"]]}", self.player), Has(gift_id_to_name[self.girldata[girl]["gift24"]]) & Has(f"Unlock Girl({girl})"))
 
             if girl == "kyu":
-                for gp in self.girllist:
+                for gp in girllist:
                     if slot_data[f"{gp}_enabled"]:
                         self.set_rule(self.multiworld.get_location(f"given kyu {gp}'s panties", self.player), HasAll(f"{gp}'s panties", "Unlock Girl(kyu)"))
 

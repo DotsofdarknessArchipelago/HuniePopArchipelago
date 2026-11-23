@@ -111,7 +111,11 @@ namespace HuniePopArchiepelagoClient.UI
             buttonstyle2.fontSize = (int)(h / 10);
 
 
-            if (ArchipelagoClient.Authenticated)
+            if (ArchipelagoClient.attemptingConnection)
+            {
+                GUI.Window(300, archnewrect, connectingwindow, "");
+            }
+            else if (ArchipelagoClient.Authenticated)
             {
                 GUI.Window(300, archnewrect, connectedwindow, "");
             }
@@ -207,6 +211,13 @@ namespace HuniePopArchiepelagoClient.UI
             }
         }
 
+        public static void connectingwindow(int id)
+        {
+            float t = (float)((archnewrect.height * 0.8) / 5);
+            float s = (float)(archnewrect.height * 0.1);
+            GUI.Label(new Rect(0, s, archnewrect.width, t), HuniePopArchipelago.APDisplayInfo + " Status: Connecting", labelstyle1);
+        }
+
         public static void newgamewindow(int id)
         {
             string statusMessage = " Status: Disconnected";
@@ -298,9 +309,9 @@ namespace HuniePopArchiepelagoClient.UI
             }
             else
             {
-                playerfile = HuniePopArchipelago.ArchipelagoClient.session.DataStorage[Scope.Slot, $"savefile"];
-                if (playerfile.IsNullOrWhiteSpace())
+                if (ArchipelagoClient.connectedplayerfile.IsNullOrWhiteSpace() || ArchipelagoClient.connectedplayerfile == "null")
                 {
+                    //HuniePopArchipelago.BepinLogger.LogMessage("PLAYERFILE NULL OR BLANK");
                     s = "START GAME";
                     g = "NEW GAME";
                     gs = false;
@@ -332,6 +343,8 @@ namespace HuniePopArchiepelagoClient.UI
             {
                 if (GUI.Button(new Rect(0, 7 * (archsaverect1.height / 8), archsaverect1.width, archsaverect1.height / 8), s, buttonstyle1))
                 {
+                    ArchipelagoClient.alist.resetlist();
+
                     SaveFile saveFile = new SaveFile
                     {
                         //set some default values
@@ -442,12 +455,12 @@ namespace HuniePopArchiepelagoClient.UI
 
                     HuniePopArchipelago.BepinLogger.LogMessage("SLOT STARTED ALREADY");
                     HuniePopArchipelago.BepinLogger.LogMessage("PLAYERFILE:");
-                    HuniePopArchipelago.BepinLogger.LogMessage(playerfile);
+                    HuniePopArchipelago.BepinLogger.LogMessage(ArchipelagoClient.connectedplayerfile);
 
                     FieldInfo field = typeof(SaveData).GetField("_saveFiles", BindingFlags.NonPublic | BindingFlags.Instance);
                     if (field != null)
                     {
-                        SaveFile[] tempfile = [JsonConvert.DeserializeObject<SaveFile>(playerfile), new SaveFile(), new SaveFile(), new SaveFile()];
+                        SaveFile[] tempfile = [JsonConvert.DeserializeObject<SaveFile>(ArchipelagoClient.connectedplayerfile), new SaveFile(), new SaveFile(), new SaveFile()];
                         field.SetValue(SaveUtils.GetSaveData(), tempfile);
 
                         MethodInfo dynMethod = ts.GetType().GetMethod("OnContinueGame", BindingFlags.NonPublic | BindingFlags.Instance);
