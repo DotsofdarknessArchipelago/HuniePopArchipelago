@@ -18,13 +18,13 @@ namespace HuniePopArchipelagoClient.HuniePop.Girls
         [HarmonyPostfix]
         public static void datebutton(ActionMenuButton __instance)
         {
-            junkloc ??= Convert.ToInt32(Plugin.curse.connected.slot_data["junk_item_start"]);
+            junkloc ??= Convert.ToInt32(ArchipelagoClient.ServerData.slotData["junk_item_start"]);
 
-            if (__instance.definition.action == ActionMenuItemType.ASK_HER_OUT && Convert.ToBoolean(Plugin.curse.connected.slot_data["progressive_dates"]))
+            if (__instance.definition.action == ActionMenuItemType.ASK_HER_OUT && Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["progressive_dates"]))
             {
-                if (CursedArchipelagoClient.alist.hasitemcount((long)(junkloc + 86), 4)) { return; }
+                if (ArchipelagoClient.alist.hasitemcount((long)(junkloc + 86), 4)) { return; }
 
-                if (!CursedArchipelagoClient.alist.hasitemcount((long)(junkloc + 86), GameManager.System.Player.GetGirlData(GameManager.System.Location.currentGirl).relationshipLevel))
+                if (!ArchipelagoClient.alist.hasitemcount((long)(junkloc + 86), GameManager.System.Player.GetGirlData(GameManager.System.Location.currentGirl).relationshipLevel))
                 {
                     __instance.button.Disable();
                     __instance.Refresh();
@@ -36,7 +36,7 @@ namespace HuniePopArchipelagoClient.HuniePop.Girls
         [HarmonyPostfix]
         public static void datebutton2(ActionMenuButton __instance)
         {
-            junkloc ??= Convert.ToInt32(Plugin.curse.connected.slot_data["junk_item_start"]);
+            junkloc ??= Convert.ToInt32(ArchipelagoClient.ServerData.slotData["junk_item_start"]);
 
             switch (__instance.definition.subtitleType)
             {
@@ -44,7 +44,7 @@ namespace HuniePopArchipelagoClient.HuniePop.Girls
                     if (!__instance.button.IsEnabled())
                     {
                         if (GameManager.System.Player.GetGirlData(GameManager.System.Location.currentGirl).dayDated) { __instance.actionSubLabel.SetText("-Finished-"); }
-                        else if (!CursedArchipelagoClient.alist.hasitemcount((long)(junkloc + 86), GameManager.System.Player.GetGirlData(GameManager.System.Location.currentGirl).relationshipLevel)) { __instance.actionSubLabel.SetText("-Missing Date Pass-"); }
+                        else if (!ArchipelagoClient.alist.hasitemcount((long)(junkloc + 86), GameManager.System.Player.GetGirlData(GameManager.System.Location.currentGirl).relationshipLevel)) { __instance.actionSubLabel.SetText("-Missing Date Pass-"); }
                     }
                     break;
             }

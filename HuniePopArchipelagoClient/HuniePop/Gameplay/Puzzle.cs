@@ -1,4 +1,5 @@
-﻿using Boomlagoon.JSON;
+﻿using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using Boomlagoon.JSON;
 using HarmonyLib;
 using HuniePopArchiepelagoClient.Archipelago;
 using Mono.Cecil.Cil;
@@ -24,16 +25,16 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
         public static void puzzledeathlinks(PuzzleGame __instance)
         {
             if (__instance.isBonusRound) { return; }
-            if (__instance.puzzleGameState == PuzzleGameState.WAITING && CursedArchipelagoClient.deathlinkdeaths.Count > 0)
+            if (__instance.puzzleGameState == PuzzleGameState.WAITING && HuniePopArchipelago.ArchipelagoClient.DeathLinkHandler.HasDeathLinks())
             {
-                BouncedPacket t = CursedArchipelagoClient.deathlinkdeaths.Pop();
-                if (t.data.Keys.Contains("cause"))
+                DeathLink death = HuniePopArchipelago.ArchipelagoClient.DeathLinkHandler.GetDeathLinkDeath();
+                if (death.Cause != null)
                 {
-                    ArchipelagoConsole.LogMessage($"Recieved DEATH from {t.data["source"]} cause {t.data["cause"]}");
+                    ArchipelagoConsole.LogMessage($"Recieved DEATH from {death.Source} cause {death.Cause}");
                 }
                 else
                 {
-                    ArchipelagoConsole.LogMessage($"Recieved DEATH from {t.data["source"]}");
+                    ArchipelagoConsole.LogMessage($"Recieved DEATH from {death.Source}");
                 }
                 __instance.puzzleGameState = PuzzleGameState.FINISHED;
                 deathprocessing = true;
@@ -50,20 +51,20 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
             GirlPlayerData girlData = GameManager.System.Player.GetGirlData(GameManager.System.Location.currentGirl);
             if (____activePuzzleGame.isVictorious)
             {
-                if (girlData.relationshipLevel >= 1) { Plugin.curse.sendLoc($"{girlData.GetGirlDefinition().firstName.ToLower()}_date_loc_start", 1); }
-                if (girlData.relationshipLevel >= 2) { Plugin.curse.sendLoc($"{girlData.GetGirlDefinition().firstName.ToLower()}_date_loc_start", 2); }
-                if (girlData.relationshipLevel >= 3) { Plugin.curse.sendLoc($"{girlData.GetGirlDefinition().firstName.ToLower()}_date_loc_start", 3); }
-                if (girlData.relationshipLevel >= 4) { Plugin.curse.sendLoc($"{girlData.GetGirlDefinition().firstName.ToLower()}_date_loc_start", 4); }
+                if (girlData.relationshipLevel >= 1) { HuniePopArchipelago.ArchipelagoClient.sendLoc($"{girlData.GetGirlDefinition().firstName.ToLower()}_date_loc_start", 1); }
+                if (girlData.relationshipLevel >= 2) { HuniePopArchipelago.ArchipelagoClient.sendLoc($"{girlData.GetGirlDefinition().firstName.ToLower()}_date_loc_start", 2); }
+                if (girlData.relationshipLevel >= 3) { HuniePopArchipelago.ArchipelagoClient.sendLoc($"{girlData.GetGirlDefinition().firstName.ToLower()}_date_loc_start", 3); }
+                if (girlData.relationshipLevel >= 4) { HuniePopArchipelago.ArchipelagoClient.sendLoc($"{girlData.GetGirlDefinition().firstName.ToLower()}_date_loc_start", 4); }
             }
             if (____activePuzzleGame.isBonusRound && !girlData.gotPanties)
             {
                 girlData.gotPanties = true;
                 girlData.AddPhotoEarned(3);
-                Plugin.curse.sendLoc("sleep_loc_start", (girlData.GetGirlDefinition().id));
+                HuniePopArchipelago.ArchipelagoClient.sendLoc("sleep_loc_start", (girlData.GetGirlDefinition().id));
             }
-            if (CursedArchipelagoClient.deathlink > 0 && !deathprocessing && !____activePuzzleGame.isVictorious)
+            if (HuniePopArchipelago.ArchipelagoClient.DeathLinkHandler.deathLinkOptionVal > 0 && !deathprocessing && !____activePuzzleGame.isVictorious)
             {
-                Plugin.curse.sendJson($"{{\"cmd\":\"Bounce\", \"tags\":[\"DeathLink\"],\"data\":{{\"cause\":\"Failed date with {GameManager.System.Location.currentGirl.firstName}\",\"source\":\"{Plugin.curse.username}\",\"time\":{(long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds}}}}}");
+                HuniePopArchipelago.ArchipelagoClient.DeathLinkHandler.SendDeathLink($"Failed date with {GameManager.System.Location.currentGirl.firstName}");
             }
             deathprocessing = false;
         }
@@ -78,11 +79,11 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
         [HarmonyPostfix]
         public static void datefin2(PuzzleManager __instance, ref bool ____goToBonusRound)
         {
-            junkloc ??= Convert.ToInt32(Plugin.curse.connected.slot_data["junk_item_start"]);
+            junkloc ??= Convert.ToInt32(ArchipelagoClient.ServerData.slotData["junk_item_start"]);
 
-            if (____goToBonusRound && Convert.ToBoolean(Plugin.curse.connected.slot_data["progressive_dates"]))
+            if (____goToBonusRound && Convert.ToBoolean(ArchipelagoClient.ServerData.slotData["progressive_dates"]))
             {
-                if (!CursedArchipelagoClient.alist.hasitemcount((long)(junkloc + 86), 5)) { ____goToBonusRound = false; }
+                if (!ArchipelagoClient.alist.hasitemcount((long)(junkloc + 86), 5)) { ____goToBonusRound = false; }
             }
         }
 
@@ -119,7 +120,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
         [HarmonyPrefix]
         public static bool puzzlegoalmodding(ref int __result)
         {
-            int goal = Convert.ToInt32(Plugin.curse.connected.slot_data["puzzle_affection_base"]);
+            int goal = Convert.ToInt32(ArchipelagoClient.ServerData.slotData["puzzle_affection_base"]);
             int mod = 0;
 
             List<GirlPlayerData> girls = GameManager.System.Player.girls;
@@ -127,7 +128,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
             {
                 mod += (g.relationshipLevel - 1);
             }
-            __result = goal + (Convert.ToInt32(Plugin.curse.connected.slot_data["puzzle_affection_add"]) * mod);
+            __result = goal + (Convert.ToInt32(ArchipelagoClient.ServerData.slotData["puzzle_affection_add"]) * mod);
             if (__result > 999999) { __result = 999999; }
             return false;
         }
@@ -147,7 +148,7 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
             else
             {
                 //ArchipelagoConsole.LogMessage("NOT BONUS");
-                __instance.SetResourceValue(PuzzleGameResourceType.MOVES, Convert.ToInt32(Plugin.curse.connected.slot_data["puzzle_moves"]), false);
+                __instance.SetResourceValue(PuzzleGameResourceType.MOVES, Convert.ToInt32(ArchipelagoClient.ServerData.slotData["puzzle_moves"]), false);
             }
         }
     }

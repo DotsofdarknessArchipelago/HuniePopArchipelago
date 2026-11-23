@@ -14,14 +14,14 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
         [HarmonyPrefix]
         public static bool girldataoverrite1(int id, ref Dictionary<int, GirlDefinition> ____definitions, ref GirlDefinition __result)
         {
-            if (CursedArchipelagoClient.girldata == null)
+            if (ArchipelagoClient.girldata == null)
             {
                 return true; 
             }
 
-            if (CursedArchipelagoClient.girldata.ContainsKey(id))
+            if (ArchipelagoClient.girldata.ContainsKey(id))
             {
-                __result = CursedArchipelagoClient.girldata[id];
+                __result = ArchipelagoClient.girldata[id];
                 return false;
                 //__result.mostDesiredTrait = (GameManager.Data.Traits.Get(Convert.ToInt32(Plugin.curse.connected.slot_data["girldata"][__result.name]["loves"])));
                 //__result.leastDesiredTrait = (GameManager.Data.Traits.Get(Convert.ToInt32(Plugin.curse.connected.slot_data["girldata"][__result.name]["hates"])));
@@ -35,12 +35,12 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
         [HarmonyPrefix]
         public static bool girldataoverrite2(GirlData __instance, ref Dictionary<int, GirlDefinition> ____definitions, ref List<GirlDefinition> __result)
         {
-            if (CursedArchipelagoClient.girldata == null) return true;
+            if (ArchipelagoClient.girldata == null) return true;
 
             List<GirlDefinition> list = new List<GirlDefinition>();
-            for (int i = 1; i <= CursedArchipelagoClient.girldata.Count; i++)
+            for (int i = 1; i <= ArchipelagoClient.girldata.Count; i++)
             {
-                list.Add(CursedArchipelagoClient.girldata[i]);
+                list.Add(ArchipelagoClient.girldata[i]);
             }
             __result = list;
             return false;

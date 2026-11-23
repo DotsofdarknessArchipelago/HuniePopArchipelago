@@ -70,8 +70,35 @@ namespace HuniePopArchiepelagoClient.HuniePop.Gameplay
             using (StreamWriter file = File.CreateText(Application.persistentDataPath + "/archdata"))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, CursedArchipelagoClient.alist);
+                serializer.Serialize(file, ArchipelagoClient.alist);
             }
+        }
+
+
+        [HarmonyPatch(typeof(GirlSaveData), MethodType.Constructor, new Type[] { typeof(GirlDefinition) })]
+        [HarmonyPrefix]
+        public static bool girlsavetest(GirlDefinition girl, GirlSaveData __instance)
+        {
+            __instance.metStatus = 0;
+            __instance.relationshipLevel = 1;
+            __instance.appetite = 6;
+            __instance.inebriation = 0;
+            __instance.dayDated = false;
+            __instance.photosEarned = new List<int>();
+            __instance.uniqueGifts = new List<int>();
+            __instance.collection = new List<int>();
+            __instance.hairstyles = new List<int>();
+            __instance.hairstyles.Add(0);
+            __instance.outfits = new List<int>();
+            __instance.outfits.Add(0);
+            __instance.hairstyle = 0;
+            __instance.outfit = 0;
+            __instance.details = new bool[Enum.GetNames(typeof(GirlDetailType)).Length];
+            __instance.recentQuizzes = new List<int>();
+            __instance.recentQuestions = new List<int>();
+            __instance.gotPanties = false;
+            __instance.lovePotionUsed = false;
+            return false;
         }
 
     }

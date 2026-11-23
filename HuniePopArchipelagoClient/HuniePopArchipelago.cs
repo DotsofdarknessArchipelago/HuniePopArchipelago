@@ -4,39 +4,26 @@ using BepInEx.Logging;
 using HarmonyLib;
 using HuniePopArchiepelagoClient.Archipelago;
 using HuniePopArchiepelagoClient.UI;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
+using HuniePopArchipelagoClient.Archipelago;
 using UnityEngine;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace HuniePopArchiepelagoClient
 {
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-    public class Plugin : BaseUnityPlugin
+    public class HuniePopArchipelago : BaseUnityPlugin
     {
         public const string PluginGUID = "Dots.Archipelago.huniepop";
         public const string PluginName = "Hunie Pop";
-        public const string PluginVersion = "2.3.1";
-        public static int compatworldmajor = 2;
-        public static int compatworldminor = 3;
+        public const string PluginVersion = "3.0.1";
+        public static int compatworldmajor = 3;
+        public static int compatworldminor = 0;
         public static int compatworldbuild = 1;
 
 
         public const string ModDisplayInfo = $"{PluginName} v{PluginVersion}";
         public const string APDisplayInfo = $"Archipelago v{PluginVersion}";
         public static ManualLogSource BepinLogger;
-        //public static ArchipelagoClient ArchipelagoClient;
-        public static CursedArchipelagoClient curse;
-
-        public static string playeruri = "ws://localhost:38281";
-        public static string playername = "Player1";
-        public static string playerpass = "";
-
-        public static bool tringtoconnect = false;
-        public static int connectstage = 0;
-        public static bool dll;
+        public static ArchipelagoClient ArchipelagoClient;
 
         public static bool showwindow = false;
 
@@ -46,63 +33,42 @@ namespace HuniePopArchiepelagoClient
         {
             // Plugin startup logic
             BepinLogger = Logger;
-            curse = new CursedArchipelagoClient();
+            ArchipelagoClient = new ArchipelagoClient();
             ArchipelagoConsole.Awake();
 
             new Harmony(PluginGUID).PatchAll();
 
-            try
-            {
-                ArchipelagoConsole.LogMessage("DotsWebsocket.dll version:" + helper.dotsV().ToString());
-                if (helper.dotsV() == 3) { dll = true; }
-                else { ArchipelagoConsole.LogMessage("DotsWebsocket Not Correct Version"); }
-
-            }
-            catch
-            {
-                dll = false;
-                ArchipelagoConsole.LogImportant("FATAL ERROR: DotsWebSocket.dll not able to be accessed");
-                if (File.Exists("/BepInEx/plugins/Hunie Pop Archipelago Client/DotsWebSocket.dll"))
-                {
-                    ArchipelagoConsole.LogImportant("DotsWebSocket.dll exists but errored on client.");
-                }
-            }
             ArchipelagoConsole.LogMessage($"{ModDisplayInfo} loaded! - Press F8 to Toggle Console");
 
         }
         void Update()
         {
-            if (dll)
+            if (ArchipelagoClient.Authenticated)
             {
-                if (tringtoconnect && helper.hasmsg(curse.ws))
+                if (GameManager.System.GameState != GameState.PUZZLE && ArchipelagoClient.DeathLinkHandler.deathLinkOptionVal != 3 && ArchipelagoClient.DeathLinkHandler.HasDeathLinks())
                 {
-                    CursedArchipelagoClient.msgCallback(Marshal.PtrToStringAnsi(helper.getmsg(curse.ws)));
+                    BepinLogger.LogMessage("RESETTING DEATLINK LIST SINCE OUTSIDE OF PUZZLE");
+                    ArchipelagoClient.DeathLinkHandler.ClearDeathLink();
                 }
-            }
-
-            if (GameManager.System.GameState != GameState.PUZZLE && CursedArchipelagoClient.deathlink != 3 && CursedArchipelagoClient.deathlinkdeaths.Count > 0)
-            {
-                BepinLogger.LogMessage("RESETTING DEATLINK LIST SINCE OUTSIDE OF PUZZLE");
-                CursedArchipelagoClient.deathlinkdeaths = [];
             }
 
             if (Input.GetKeyDown(KeyCode.F8))
             {
                 ArchipelagoConsole.toggle();
             }
-            if (Input.GetKeyDown(KeyCode.F7))
-            {
-                ArchipelagoConsole.LogMessage($"gamestate: {GameManager.System.GameState}");
-                ArchipelagoConsole.LogMessage($"puzzlestate: {GameManager.System.Puzzle.Game.puzzleGameState}");
-                
-            }
-            if (Input.GetKeyDown(KeyCode.Escape) && !curse.fullconnection)
+            //if (Input.GetKeyDown(KeyCode.F7))
+            //{
+            //    ArchipelagoConsole.LogMessage($"gamestate: {GameManager.System.GameState}");
+            //    ArchipelagoConsole.LogMessage($"puzzlestate: {GameManager.System.Puzzle.Game.puzzleGameState}");
+            //}
+            if (Input.GetKeyDown(KeyCode.Escape) && !ArchipelagoClient.Authenticated)
             {
                 Menu.newgame = false;
             }
             if (Input.GetKeyDown(KeyCode.Return) && !ArchipelagoConsole.Hidden && !ArchipelagoConsole.CommandText.IsNullOrWhiteSpace())
             {
-                Plugin.curse.sendSay(ArchipelagoConsole.CommandText);
+                if (ArchipelagoConsole.CommandText.StartsWith("$")) { Codes.ProcessCode(ArchipelagoConsole.CommandText); }
+                else { HuniePopArchipelago.ArchipelagoClient.SendMessage(ArchipelagoConsole.CommandText); }
                 ArchipelagoConsole.CommandText = "";
             }
         }
@@ -116,18 +82,18 @@ namespace HuniePopArchiepelagoClient
             GUI.backgroundColor = Color.black;
 
             // show the Archipelago Version and whether we're connected or not
-            if (curse.fullconnection)
+            if (ArchipelagoClient.Authenticated)
             {
                 // if your game doesn't usually show the cursor this line may be necessary
                 // Cursor.visible = false;
                 GUI.Box(new Rect(Screen.width - 300, 40, 300, 20), "");
-                if (curse.worldver == null)
+                if (ArchipelagoClient.worldver == null)
                 {
                     GUI.Label(new Rect(Screen.width - 295, 40, 300, 20), "Client V(" + PluginVersion + "), World V(ERROR VERSION NOT SUPPORTED): Status: Connected");
                 }
                 else
                 {
-                    GUI.Label(new Rect(Screen.width - 295, 40, 300, 20), "Client V(" + PluginVersion + "), World V(" + curse.worldver.major + "." + curse.worldver.minor + "." + curse.worldver.build + "): Status: Connected");
+                    GUI.Label(new Rect(Screen.width - 295, 40, 300, 20), "Client V(" + PluginVersion + "), World V(" + ArchipelagoClient.worldver.Major + "." + ArchipelagoClient.worldver.Minor + "." + ArchipelagoClient.worldver.Build + "): Status: Connected");
                 }
 
             }

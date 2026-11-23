@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
+using HuniePopArchipelagoClient.Archipelago;
 using UnityEngine;
 
 namespace HuniePopArchiepelagoClient.Archipelago
@@ -43,7 +44,7 @@ namespace HuniePopArchiepelagoClient.Archipelago
                 logLines.RemoveAt(0);
             }
             logLines.Add(message);
-            Plugin.BepinLogger.LogMessage(message);
+            HuniePopArchipelago.BepinLogger.LogMessage(message);
             lastUpdateTime = Time.time;
             UpdateWindow();
         }
@@ -74,13 +75,14 @@ namespace HuniePopArchiepelagoClient.Archipelago
             //}
 
             // draw client/server commands entry
-            if (Hidden || !Plugin.curse.fullconnection) return;
+            if (Hidden || !ArchipelagoClient.Authenticated) return;
 
             CommandText = GUI.TextField(CommandTextRect, CommandText);
             if (!CommandText.IsNullOrWhiteSpace() && GUI.Button(SendCommandButton, "Send"))
             {
                 //Plugin.ArchipelagoClient.SendMessage(CommandText);
-                Plugin.curse.sendSay(CommandText);
+                if (CommandText.StartsWith("$")) { Codes.ProcessCode(CommandText); }
+                else { HuniePopArchipelago.ArchipelagoClient.SendMessage(CommandText); }
                 CommandText = "";
             }
         }
